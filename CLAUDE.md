@@ -24,6 +24,10 @@ Demo GTM engine for Allie AI (AI software for manufacturing: FactoryGPT, RealTim
 - Every run writes its output to a file in `output/`.
 - Data flow: `data/accounts_seed.csv` -> `output/leads_master.csv` -> Google Sheet -> `docs/index.html` (cockpit).
 
+## Source of truth
+- reference/icp.md is the single source of truth for ICP, segmentation, signals, buying committee, guardrails and exclusions.
+- Every skill must read reference/icp.md instead of copying its content. If the ICP changes, it changes only there.
+
 ## Working conventions
 - One step at a time.
 - Explain each command in one line before running it.
