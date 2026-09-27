@@ -13,6 +13,8 @@ company_type labels (every account gets one): manufacturer-continuous, manufactu
 Priority verticals: food & beverage, building materials (cement, steel, glass), CPG / personal care.
 Secondary verticals: auto parts (Tier-1/Tier-2), metalworking and foundries, packaging, pharma / medical devices.
 
+Gray zone: 50-199 employees with a single line, or size not verifiable = gate_result unknown. Unknown never gets paid enrichment.
+
 ## Segmentation matrix
 Axis 1 — process type: Continuous / Discrete / Hybrid.
 Axis 2 — deployment archetype: Enterprise multi-plant / Mid-market (1-3 plants) / Greenfield-nearshoring.

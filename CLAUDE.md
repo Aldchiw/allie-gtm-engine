@@ -27,6 +27,7 @@ Demo GTM engine for Allie AI (AI software for manufacturing: FactoryGPT, RealTim
 ## Source of truth
 - reference/icp.md is the single source of truth for ICP, segmentation, signals, buying committee, guardrails and exclusions.
 - Every skill must read reference/icp.md instead of copying its content. If the ICP changes, it changes only there.
+- reference/schema.md defines the columns of every output file. Skills must use these exact column names.
 
 ## Working conventions
 - One step at a time.
