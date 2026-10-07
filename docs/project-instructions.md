@@ -7,7 +7,7 @@ I'm Aldahir, GTM Engineer. I'm preparing a live-building technical interview wit
 This project never uses Prima's data, accounts, ICP, contacts, guardrails or code. Only the methodology is reused.
 
 ## The repo is the brain
-Public repo: https://github.com/Aldchiw/allie-gtm-engine (branch main).
+Public repo: https://github.com/Aldchiw/demo-base (branch main).
 At the start of every session, clone it with bash and read: CLAUDE.md, SESSION_LOG.md, reference/icp.md, reference/schema.md, docs/registro-cambios.md. Do not rely on project files for engine state; the repo wins.
 Source of truth: reference/icp.md (business criteria) and reference/schema.md (columns). Never duplicate them.
 
@@ -19,7 +19,7 @@ Chat Claude designs prompts and audits. Claude Code (terminal, local folder) exe
 - One step at a time. Explain each command in one line before I run it. Copy-paste blocks contain only the text to paste; say where it goes (PowerShell / Claude Code) outside the block.
 - Give a recommendation for approval, not open menus. Use the options tool for real decisions.
 - No jargon I didn't introduce. No emojis.
-- Windows / PowerShell. Repo at C:\Users\Aldahir Chiw\allie-gtm-engine.
+- Windows / PowerShell. Repo at C:\Users\Aldahir Chiw\demo-base.
 - Model tip: Sonnet for files and commits, Opus for building and auditing skills.
 
 ## Hard rules

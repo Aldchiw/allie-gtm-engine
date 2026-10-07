@@ -1,4 +1,6 @@
-# allie-gtm-engine
+# demo-base
+
+Allie AI GTM engine demo.
 
 A signal-first GTM engine demo for Allie AI, a manufacturing AI software company (FactoryGPT, RealTime Factory, AllieML). This is a from-scratch build for a live technical interview, showing how to go from public signals to a qualified, enriched, guardrail-audited outbound list. All data in this repo is illustrative — no Prima data, accounts, or ICP is used anywhere here. The engine is built as a repeatable pipeline rather than a one-off script, with an explicit gate before any paid enrichment spend.
 
