@@ -1,13 +1,25 @@
 #!/usr/bin/env node
-// Builds output/cockpit.html: a self-contained, offline view of the latest run of each stage.
-// Reads only local files in output/. No external dependencies. Never renders contact emails.
-// Usage: node scripts/build-cockpit.js
+// 1. Merges the latest run of each stage into output/leads_master.csv (cumulative, local, gitignored).
+// 2. Builds output/cockpit.html (local) and docs/index.html (public) from leads_master.csv.
+// Neither view renders a full contact email; the public one shows it masked (a•••@domain).
+// No external dependencies. Usage: node scripts/build-cockpit.js
 
 const fs = require('fs');
 const path = require('path');
 
 const OUT_DIR = path.join(__dirname, '..', 'output');
 const OUT_FILE = path.join(OUT_DIR, 'cockpit.html');
+const PUBLIC_FILE = path.join(__dirname, '..', 'docs', 'index.html');
+const MASTER_FILE = path.join(OUT_DIR, 'leads_master.csv');
+
+// Column contract from reference/schema.md, in order.
+const MASTER_COLUMNS = [
+  'run_id', 'detected_at', 'data_label', 'account_name', 'domain', 'country',
+  'signal_type', 'signal_detail', 'signal_url', 'signal_date',
+  'company_type', 'process_type', 'deployment_archetype', 'vertical', 'priority', 'gate_result', 'gate_reason',
+  'contact_name', 'contact_title', 'contact_role', 'linkedin_url',
+  'contact_email', 'email_status', 'draft_e1', 'audit_result', 'audit_notes', 'stage', 'outcome',
+];
 const USD_PER_CREDIT = 0.10; // Deepline: 1 credit = 0.10 USD (CLAUDE.md)
 
 // ---------- CSV ----------
@@ -59,7 +71,14 @@ function readStage(prefix) {
   return { file, rows: parseCsv(fs.readFileSync(path.join(OUT_DIR, file), 'utf8')) };
 }
 
-// ---------- Load + join ----------
+function toCsv(rows) {
+  const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  return [MASTER_COLUMNS.map(q).join(',')]
+    .concat(rows.map(r => MASTER_COLUMNS.map(c => q(r[c])).join(',')))
+    .join('\n') + '\n';
+}
+
+// ---------- Stage files -> leads_master.csv (cumulative) ----------
 
 const stages = {
   signal: readStage('signal_radar'),
@@ -74,47 +93,72 @@ const costRows = fs.existsSync(costPath) ? parseCsv(fs.readFileSync(costPath, 'u
 const totalCredits = costRows.reduce((s, r) => s + (parseFloat(r.credits_spent) || 0), 0);
 const totalUsd = totalCredits * USD_PER_CREDIT;
 
+// Copies non-blank schema columns from src into dst. Blank never overwrites a value.
+function fill(dst, src) {
+  for (const c of MASTER_COLUMNS) if (src[c] != null && src[c] !== '') dst[c] = src[c];
+  return dst;
+}
+const keyOf = r => r.account_name + '||' + (r.contact_name || '');
+
+// Fresh rows from the latest stage files: account columns from signal + gate, contacts from later stages.
+const fresh = new Map();
+const accountBase = new Map();
+for (const r of [...stages.signal.rows, ...stages.gate.rows]) {
+  if (!r.account_name) continue;
+  if (!accountBase.has(r.account_name)) accountBase.set(r.account_name, {});
+  fill(accountBase.get(r.account_name), r);
+}
+for (const r of [...stages.committee.rows, ...stages.enrich.rows, ...stages.draft.rows]) {
+  if (!r.account_name || !r.contact_name) continue;
+  const k = keyOf(r);
+  if (!fresh.has(k)) fresh.set(k, fill({}, accountBase.get(r.account_name) || {}));
+  fill(fresh.get(k), r);
+}
+for (const [name, base] of accountBase) {
+  if (![...fresh.values()].some(r => r.account_name === name)) fresh.set(name + '||', fill({}, base));
+}
+
+// Merge into the existing master: keep every old row, update matching keys, append new ones.
+const master = new Map();
+if (fs.existsSync(MASTER_FILE)) {
+  for (const r of parseCsv(fs.readFileSync(MASTER_FILE, 'utf8'))) if (r.account_name) master.set(keyOf(r), r);
+}
+const before = master.size;
+let added = 0, updated = 0, discarded = 0;
+for (const [k, r] of fresh) {
+  if (!r.signal_url || !r.signal_date) { discarded++; continue; } // schema.md: required
+  if (master.has(k)) { fill(master.get(k), r); updated++; }
+  else { master.set(k, fill({}, r)); added++; }
+}
+// An account's blank-contact placeholder row goes away once the account has a real contact.
+for (const k of [...master.keys()]) {
+  const acc = k.slice(0, -2);
+  if (k.endsWith('||') && [...master.values()].some(r => r.account_name === acc && r.contact_name)) master.delete(k);
+}
+const masterRows = [...master.values()];
+fs.writeFileSync(MASTER_FILE, toCsv(masterRows), 'utf8');
+
+// ---------- leads_master.csv -> accounts ----------
+
 const accounts = new Map();
-function account(name) {
-  if (!accounts.has(name)) accounts.set(name, { name, signal: null, gate: null, contacts: new Map() });
-  return accounts.get(name);
-}
-
-for (const r of stages.signal.rows) if (r.account_name) account(r.account_name).signal = r;
-for (const r of stages.gate.rows) if (r.account_name) account(r.account_name).gate = r;
-
-// Contacts keyed by account + contact_name; later stages add fields to the same contact.
-function contact(r) {
-  if (!r.account_name || !r.contact_name) return null;
-  const acc = account(r.account_name);
-  if (!acc.contacts.has(r.contact_name)) {
-    acc.contacts.set(r.contact_name, {
-      name: r.contact_name, title: r.contact_title, role: r.contact_role,
-      linkedin: r.linkedin_url, emailStatus: '', channel: '', draft: '', audit: '', auditNotes: '',
-    });
+for (const r of masterRows) {
+  if (!accounts.has(r.account_name)) {
+    accounts.set(r.account_name, { name: r.account_name, base: r, contactList: [] });
   }
-  return acc.contacts.get(r.contact_name);
+  const a = accounts.get(r.account_name);
+  a.signal = a.signal || (r.signal_url ? r : null);
+  a.gate = a.gate || (r.gate_result ? r : null);
+  if (r.gate_result) a.base = r;
+  if (!r.contact_name) continue;
+  const verified = r.email_status === 'verified';
+  a.contactList.push({
+    name: r.contact_name, title: r.contact_title, role: r.contact_role, linkedin: r.linkedin_url,
+    emailStatus: verified ? 'verified' : 'blank', email: verified ? r.contact_email : '',
+    channel: r.draft_e1 ? (verified ? 'email' : 'linkedin') : '', // draft skill: email if verified, else LinkedIn
+    draft: r.draft_e1 || '', audit: r.audit_result || '', auditNotes: r.audit_notes || '',
+  });
 }
-
-for (const r of stages.committee.rows) contact(r);
-for (const r of stages.enrich.rows) {
-  const c = contact(r);
-  if (c) c.emailStatus = r.email_status === 'verified' ? 'verified' : 'blank';
-}
-for (const r of stages.draft.rows) {
-  const c = contact(r);
-  if (!c) continue;
-  c.channel = r.channel || '';
-  c.draft = r.draft_e1 || '';
-  c.audit = r.audit_result || '';
-  c.auditNotes = r.audit_notes || '';
-}
-
 const list = [...accounts.values()];
-for (const a of list) {
-  a.base = a.gate || a.signal || {};
-  a.contactList = [...a.contacts.values()];
-}
 
 // ---------- Funnel ----------
 
@@ -163,11 +207,18 @@ function hostOf(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } c
 const ROLE_LABEL = { economic_buyer: 'Economic buyer', champion: 'Champion' };
 const CHANNEL_LABEL = { email: 'Email', linkedin: 'Nota LinkedIn', linkedin_note: 'Nota LinkedIn' };
 
-function renderContact(c) {
-  const li = safeUrl(c.linkedin);
-  const email = c.emailStatus === 'verified'
-    ? '<span class="pill ok">email verified</span>'
-    : '<span class="pill muted">email blank</span>';
+// Public view: first letter + ••• + @domain. Never the full address.
+function maskEmail(e) {
+  const at = (e || '').indexOf('@');
+  return at > 0 ? e[0] + '•••' + e.slice(at) : '';
+}
+
+function renderContact(c, pub) {
+  const li = pub ? '' : safeUrl(c.linkedin);
+  const masked = pub ? maskEmail(c.email) : '';
+  const email = c.emailStatus !== 'verified'
+    ? '<span class="pill muted">email blank</span>'
+    : masked ? `<span class="pill ok">${esc(masked)} verificado</span>` : '<span class="pill ok">email verified</span>';
   let draft = '<p class="muted small">Sin borrador.</p>';
   if (c.draft) {
     const auditCls = c.audit === 'pass' ? 'ok' : 'bad';
@@ -198,13 +249,13 @@ function renderContact(c) {
     </div>`;
 }
 
-function renderAccount(a) {
+function renderAccount(a, pub) {
   const b = a.base;
   const url = safeUrl(b.signal_url);
   const gate = a.gate;
   const gateCls = gate ? (gate.gate_result === 'pass' ? 'ok' : gate.gate_result === 'fail' ? 'bad' : 'warn') : 'muted';
   const contacts = a.contactList.length
-    ? a.contactList.map(renderContact).join('')
+    ? a.contactList.map(c => renderContact(c, pub)).join('')
     : '<div class="no-contact">Sin contacto verificado</div>';
   const next = nextAction(a);
   return `
@@ -264,13 +315,14 @@ const funnelHtml = funnel.map(s => `
     <div class="small muted">${esc(s.sub)}</div>
   </div>`).join('');
 
-const sources = Object.entries(stages)
-  .map(([k, v]) => `<li>${esc(k)}: ${v.file ? esc(v.file) : '<em>sin archivo</em>'}</li>`).join('')
+const sources = `<li>leads_master.csv: ${masterRows.length} filas acumuladas</li>`
+  + Object.entries(stages)
+    .map(([k, v]) => `<li>${esc(k)} (última corrida): ${v.file ? esc(v.file) : '<em>sin archivo</em>'}</li>`).join('')
   + `<li>costos: ${costRows.length ? 'cost_log.csv (' + costRows.length + ' corridas)' : '<em>sin cost_log.csv</em>'}</li>`;
 
 const generatedAt = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
 
-const html = `<!doctype html>
+const page = pub => `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -365,19 +417,31 @@ const html = `<!doctype html>
     </div>
   </div>
 
-  <div class="cards">${list.map(renderAccount).join('')}</div>
+  <div class="cards">${list.map(a => renderAccount(a, pub)).join('')}</div>
 
   <footer class="small muted">
-    Fuentes (archivo más reciente por etapa en output/):
+    Fuentes (output/):
     <ul>${sources}</ul>
-    Los emails de contacto nunca se muestran; solo su estado (verified o blank).
+    ${pub
+      ? 'Los emails de contacto se muestran enmascarados (primera letra + dominio), nunca completos.'
+      : 'Los emails de contacto nunca se muestran; solo su estado (verified o blank).'}
   </footer>
 </div>
 </body>
 </html>
 `;
 
-fs.writeFileSync(OUT_FILE, html, 'utf8');
-console.log(`cockpit written: ${path.relative(process.cwd(), OUT_FILE)}`);
+// Hard stop: no full contact email from the master may appear in either view.
+const fullEmails = masterRows.map(r => r.contact_email).filter(e => e && e.includes('@'));
+const views = [[OUT_FILE, page(false)], [PUBLIC_FILE, page(true)]];
+for (const [file, html] of views) {
+  const leaked = fullEmails.filter(e => html.toLowerCase().includes(e.toLowerCase()));
+  if (leaked.length) throw new Error(`${leaked.length} full email(s) would leak into ${path.basename(file)}; no view written`);
+}
+for (const [file, html] of views) {
+  fs.writeFileSync(file, html, 'utf8');
+  console.log(`written: ${path.relative(process.cwd(), file)}`);
+}
+console.log(`leads_master: ${before} -> ${masterRows.length} rows (${added} new, ${updated} updated, ${discarded} discarded without signal_url/date)`);
 console.log(`accounts: ${list.length} | funnel: ${funnel.map(s => s.n).join(' -> ')} | cost: ${totalCredits.toFixed(2)} credits (${totalUsd.toFixed(3)} USD)`);
 console.log('sources: ' + Object.entries(stages).map(([k, v]) => `${k}=${v.file || 'none'}`).join(', '));

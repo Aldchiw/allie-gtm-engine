@@ -6,7 +6,7 @@ Demo GTM engine for Allie AI (AI software for manufacturing: FactoryGPT, RealTim
 ## Security
 - Public repo: NEVER commit secrets. API keys only go in `.env` (gitignored).
 - All demo data must be labeled as illustrative.
-- Files with personal data (names, LinkedIn, emails) never get committed. Commit skills and company-level outputs only.
+- Public view (docs/index.html) may show names, titles, signals and drafts, because names and titles come from public press sources. Emails are always masked and LinkedIn URLs are never shown. Raw files with full emails (leads_master, committee, enrich, draft) are never committed.
 - Never print, echo, encode or partially show a secret value. To check a secret, only use yes/no checks (exists, is empty, matches a placeholder).
 - Deepline: 1 credit = 0.10 USD. Default cap per run: 2 USD (20 credits). Autoupdate is off: CLI 0.1.254 has no settings command, so every deepline call runs with DEEPLINE_NO_AUTO_UPDATE=1 and DEEPLINE_SKIP_SKILLS_SYNC=1. Update the CLI only on purpose.
 
