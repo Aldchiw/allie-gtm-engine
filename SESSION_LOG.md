@@ -18,3 +18,6 @@
 - Finding: free web search reaches plant leaders through press, but not mid-level champions (LinkedIn blocks fetch, press names only executives, role searches return job postings). Champions require a paid people API, behind the sample protocol and spend approval.
 - Decision: continue the pipeline with the 2 accounts that have a verified buyer to complete the end-to-end flow.
 - Next step: stage 5 enrich (email waterfall).
+- Built skill enrich (Deepline waterfall: dropleads -> hunter -> icypeas, verified or blank). Run enrich_20261006_2325 (output local only): 1 of 2 emails verified (Toyota Texas, via dropleads), 1 blank (Opella: no provider verified, no pattern guessing). Cost: 0.26 credits (0.026 USD), estimate approved before spending. Cost tracked in output/cost_log.csv.
+- Deepline CLI 0.1.254 has no settings command: every call runs with DEEPLINE_NO_AUTO_UPDATE=1 and DEEPLINE_SKIP_SKILLS_SYNC=1.
+- Next step: skill draft + guardrail audit (stage 6).

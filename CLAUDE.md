@@ -7,6 +7,8 @@ Demo GTM engine for Allie AI (AI software for manufacturing: FactoryGPT, RealTim
 - Public repo: NEVER commit secrets. API keys only go in `.env` (gitignored).
 - All demo data must be labeled as illustrative.
 - Files with personal data (names, LinkedIn, emails) never get committed. Commit skills and company-level outputs only.
+- Never print, echo, encode or partially show a secret value. To check a secret, only use yes/no checks (exists, is empty, matches a placeholder).
+- Deepline: 1 credit = 0.10 USD. Default cap per run: 2 USD (20 credits). Autoupdate is off: CLI 0.1.254 has no settings command, so every deepline call runs with DEEPLINE_NO_AUTO_UPDATE=1 and DEEPLINE_SKIP_SKILLS_SYNC=1. Update the CLI only on purpose.
 
 ## Pipeline (7 stages)
 1. Signal Radar
