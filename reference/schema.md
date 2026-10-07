@@ -16,13 +16,13 @@ Contract for the columns of `output/leads_master.csv`. One row per contact; if a
 | 8 | `signal_detail` | Short description of the signal. | Signal Radar |
 | 9 | `signal_url` | Source URL for the signal. Required. | Signal Radar |
 | 10 | `signal_date` | Date the signal was published/detected. Required. | Signal Radar |
-| 11 | `company_type` | ICP company_type label (manufacturer-continuous, manufacturer-discrete, manufacturer-hybrid, distributor, system-integrator, machine-builder, software-vendor, competitor, wrong-industry, unknown). | ICP Gate #0 |
-| 12 | `process_type` | `continuous`, `discrete` or `hybrid`. | Segment |
-| 13 | `deployment_archetype` | `enterprise`, `mid_market` or `greenfield`. | Segment |
-| 14 | `vertical` | Priority or secondary vertical. | Segment |
-| 15 | `priority` | `P1`, `P2` or `P3`, per the segmentation matrix. | Segment |
-| 16 | `gate_result` | `pass`, `fail` or `unknown` — result of ICP Gate #0. | ICP Gate #0 |
-| 17 | `gate_reason` | Why the account got that gate_result. | ICP Gate #0 |
+| 11 | `company_type` | ICP company_type label (manufacturer-continuous, manufacturer-discrete, manufacturer-hybrid, distributor, system-integrator, machine-builder, software-vendor, competitor, wrong-industry, unknown). | icp-gate (Gate #0 + Segment) |
+| 12 | `process_type` | `continuous`, `discrete` or `hybrid`. | icp-gate (Gate #0 + Segment) |
+| 13 | `deployment_archetype` | `enterprise`, `mid_market` or `greenfield`. | icp-gate (Gate #0 + Segment) |
+| 14 | `vertical` | Priority or secondary vertical. | icp-gate (Gate #0 + Segment) |
+| 15 | `priority` | `P1`, `P2` or `P3`, per the segmentation matrix. | icp-gate (Gate #0 + Segment) |
+| 16 | `gate_result` | `pass`, `fail` or `unknown` — result of ICP Gate #0. | icp-gate (Gate #0 + Segment) |
+| 17 | `gate_reason` | Why the account got that gate_result. | icp-gate (Gate #0 + Segment) |
 | 18 | `contact_name` | Contact's full name. | Committee |
 | 19 | `contact_title` | Contact's job title. | Committee |
 | 20 | `contact_role` | `champion` or `economic_buyer`. | Committee |
@@ -39,4 +39,5 @@ Contract for the columns of `output/leads_master.csv`. One row per contact; if a
 - `signal_url` and `signal_date` are required; a row without them is discarded.
 - Blank means not found. Never fill with guesses.
 - Only the stage that owns a column writes to it.
+- Stages 2 and 3 (Gate #0 and Segment) run in the same skill, icp-gate.
 - `stage` (cadence step) and `outcome` (result) are separate fields.

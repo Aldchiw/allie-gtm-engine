@@ -11,3 +11,6 @@
 - Fixes after review (e5c152b): job_posting removed from free defaults (job portals load with JavaScript and show no date; needs a paid jobs API behind the sample protocol); rule to search for and keep the freshest signal per account (Opella had a newer July signal than the May one picked).
 - Renamed repo to demo-base (4cd5769). Claude Code now runs on Aldahir's personal Pro account (CLAUDE_CONFIG_DIR = .claude-personal).
 - Next step: create skill icp-gate (stage 2) and run it on the 5 accounts from signal-radar.
+- Built skill icp-gate (stages 2+3, Gate #0 + Segment). First run 20261006_2250: 5/5 pass, but the review found missing rules (greenfield vs enterprise, process_type definitions, automotive OEM vertical). Rules added to the skill and icp.md; re-run 20261006_2253 matched the predicted result exactly: VUTEQ P1 (discrete greenfield), Kikkoman P2, Dohler P2, Toyota P2 (enterprise), Opella P2 (hybrid enterprise). Both runs kept as audit trail.
+- Pending: re-run signal-radar for Opella's fresher July signal.
+- Next step: skill committee (stage 4) for the 5 passed accounts.

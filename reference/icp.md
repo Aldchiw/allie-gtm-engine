@@ -6,12 +6,12 @@ An account qualifies only if ALL are true:
 - company_type is manufacturer-continuous, manufacturer-discrete or manufacturer-hybrid (operates its own physical plants).
 - Geography: Mexico, United States or LatAm.
 - Size: 200+ employees, or at least 1 plant with multiple production lines.
-- Pain: downtime, OEE, scrap or energy waste matter to the business; has a maintenance or continuous improvement function.
+- Pain: downtime, OEE, scrap or energy waste matter to the business; has a maintenance or continuous improvement function. (Structural: met by any manufacturer-* account with production lines.)
 
 company_type labels (every account gets one): manufacturer-continuous, manufacturer-discrete, manufacturer-hybrid, distributor, system-integrator, machine-builder, software-vendor, competitor, wrong-industry, unknown.
 
 Priority verticals: food & beverage, building materials (cement, steel, glass), CPG / personal care.
-Secondary verticals: auto parts (Tier-1/Tier-2), metalworking and foundries, packaging, pharma / medical devices.
+Secondary verticals: auto parts (Tier-1/Tier-2), metalworking and foundries, packaging, pharma / medical devices, automotive assembly (OEM).
 
 Gray zone: 50-199 employees with a single line, or size not verifiable = gate_result unknown. Unknown never gets paid enrichment.
 
