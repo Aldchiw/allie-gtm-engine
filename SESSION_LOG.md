@@ -14,3 +14,7 @@
 - Built skill icp-gate (stages 2+3, Gate #0 + Segment). First run 20261006_2250: 5/5 pass, but the review found missing rules (greenfield vs enterprise, process_type definitions, automotive OEM vertical). Rules added to the skill and icp.md; re-run 20261006_2253 matched the predicted result exactly: VUTEQ P1 (discrete greenfield), Kikkoman P2, Dohler P2, Toyota P2 (enterprise), Opella P2 (hybrid enterprise). Both runs kept as audit trail.
 - Pending: re-run signal-radar for Opella's fresher July signal.
 - Next step: skill committee (stage 4) for the 5 passed accounts.
+- Ran committee on the 5 passed accounts (output local only, gitignored): 2 of 10 contacts found, both economic buyers (Toyota Texas plant president; Opella Ocoyoacac plant director), 0 champions. Both manually verified by chat Claude against a second source.
+- Finding: free web search reaches plant leaders through press, but not mid-level champions (LinkedIn blocks fetch, press names only executives, role searches return job postings). Champions require a paid people API, behind the sample protocol and spend approval.
+- Decision: continue the pipeline with the 2 accounts that have a verified buyer to complete the end-to-end flow.
+- Next step: stage 5 enrich (email waterfall).
