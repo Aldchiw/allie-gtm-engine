@@ -32,8 +32,8 @@ Chat Claude designs prompts and audits. Claude Code (terminal, local folder) exe
 - Demo data is always labeled.
 
 ## Roadmap
-Done: repo skeleton, CLAUDE.md rules, ICP, schema, skill signal-radar with first verified sample (5 accounts).
-Next, in order: (1) icp-gate -> (2) segment -> (3) committee -> (4) enrich waterfall -> (5) draft + guardrail audit -> (6) sync to Google Sheet -> (7) cockpit docs/index.html reading leads_master -> (8) demo script for scenario B -> (9) prompt script for scenario A.
+Done: repo skeleton, CLAUDE.md rules, ICP, schema, skill signal-radar with first verified sample (5 accounts), skill icp-gate (Gate #0 + segment), skill committee, skill enrich (waterfall), skill draft (+ guardrail audit), local cockpit (scripts/build-cockpit.js -> output/cockpit.html).
+Next, in order: (1) demo script for scenario B -> (2) prompt script for scenario A.
 Visual reference (illustrative, earlier mockup): https://claude.ai/artifact/6R5cRNFN37B7ns8b5NtrQm
 
 ## Session discipline

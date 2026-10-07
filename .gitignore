@@ -11,3 +11,4 @@ output/enrich_*
 output/draft_*
 output/leads_master_filled*.csv
 output/leads_master.csv
+output/cockpit*.html
