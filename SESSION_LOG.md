@@ -21,3 +21,6 @@
 - Built skill enrich (Deepline waterfall: dropleads -> hunter -> icypeas, verified or blank). Run enrich_20261006_2325 (output local only): 1 of 2 emails verified (Toyota Texas, via dropleads), 1 blank (Opella: no provider verified, no pattern guessing). Cost: 0.26 credits (0.026 USD), estimate approved before spending. Cost tracked in output/cost_log.csv.
 - Deepline CLI 0.1.254 has no settings command: every call runs with DEEPLINE_NO_AUTO_UPDATE=1 and DEEPLINE_SKIP_SKILLS_SYNC=1.
 - Next step: skill draft + guardrail audit (stage 6).
+- Built skill draft (stage 6): email if verified, LinkedIn note if not; 10-rule audit. Run v1 (draft_20261006_2330) passed 9/9 but human review found timing errors: Toyota's new line starts in 2030, and Opella's line was already inaugurated on July 22. Added rule 10 (timing must match the signal stage). Run v2 (draft_20261006_2332) passed 10/10 and was approved: Toyota angle = current Tundra/Sequoia line before 2030; Opella angle = stabilization of a newly started line. Drafts are local only, demo only, never sent.
+- Lesson: the auditor checks rules; a human checks truth.
+- Next step: cockpit (docs/index.html) to show the pipeline, reading company-level outputs only.
