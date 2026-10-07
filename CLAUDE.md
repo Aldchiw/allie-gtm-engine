@@ -6,6 +6,7 @@ Demo GTM engine for Allie AI (AI software for manufacturing: FactoryGPT, RealTim
 ## Security
 - Public repo: NEVER commit secrets. API keys only go in `.env` (gitignored).
 - All demo data must be labeled as illustrative.
+- Files with personal data (names, LinkedIn, emails) never get committed. Commit skills and company-level outputs only.
 
 ## Pipeline (7 stages)
 1. Signal Radar
@@ -23,6 +24,7 @@ Demo GTM engine for Allie AI (AI software for manufacturing: FactoryGPT, RealTim
 - Sample protocol: no paid API call over a full list without a 3-5 row sample, exact cost, and explicit approval from Aldahir.
 - Every run writes its output to a file in `output/`.
 - Data flow: `data/accounts_seed.csv` -> `output/leads_master.csv` -> Google Sheet -> `docs/index.html` (cockpit).
+- output/leads_master.csv is local only (gitignored). Its columns are defined in reference/schema.md.
 
 ## Source of truth
 - reference/icp.md is the single source of truth for ICP, segmentation, signals, buying committee, guardrails and exclusions.

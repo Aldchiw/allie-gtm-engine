@@ -5,3 +5,8 @@ output/backup_*/
 service-account*.json
 *credentials*.json
 *.pem
+output/committee_*
+output/enrich_*
+output/draft_*
+output/leads_master_filled*.csv
+output/leads_master.csv
