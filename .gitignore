@@ -1,4 +1,5 @@
 .env
+.env.deepline
 node_modules/
 output/backup_*/
 *.json.key
