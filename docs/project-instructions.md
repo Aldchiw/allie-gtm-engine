@@ -21,6 +21,7 @@ Chat Claude designs prompts and audits. Claude Code (terminal, local folder) exe
 - No jargon I didn't introduce. No emojis.
 - Windows / PowerShell. Repo at C:\Users\Aldahir Chiw\demo-base.
 - Model tip: Sonnet for files and commits, Opus for building and auditing skills.
+- To open Claude Code for this repo: cd "$env:USERPROFILE\demo-base", then $env:CLAUDE_CONFIG_DIR = "$env:USERPROFILE\.claude-personal", then claude.
 
 ## Hard rules
 - Never invent data. Missing = blank. Every signal needs a source URL and date.
@@ -31,8 +32,8 @@ Chat Claude designs prompts and audits. Claude Code (terminal, local folder) exe
 - Demo data is always labeled.
 
 ## Roadmap
-Done: repo skeleton, CLAUDE.md rules, ICP, schema.
-Next, in order: (1) skill signal-radar (WebSearch, free, real URLs, 3-5 account sample) -> (2) icp-gate -> (3) segment -> (4) committee -> (5) enrich waterfall -> (6) draft + guardrail audit -> (7) sync to Google Sheet -> (8) cockpit docs/index.html reading leads_master -> (9) demo script for scenario B -> (10) prompt script for scenario A.
+Done: repo skeleton, CLAUDE.md rules, ICP, schema, skill signal-radar with first verified sample (5 accounts).
+Next, in order: (1) icp-gate -> (2) segment -> (3) committee -> (4) enrich waterfall -> (5) draft + guardrail audit -> (6) sync to Google Sheet -> (7) cockpit docs/index.html reading leads_master -> (8) demo script for scenario B -> (9) prompt script for scenario A.
 Visual reference (illustrative, earlier mockup): https://claude.ai/artifact/6R5cRNFN37B7ns8b5NtrQm
 
 ## Session discipline
